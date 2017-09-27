@@ -47,6 +47,28 @@ class Car(object):
         yield self.env.timeout(duration)
 
 
+class Job_scheduler:
+    def __init__(self, env, num_processors):
+        self.env = env
+        self.processor = simpy.Resource(env, num_processors)
+
+    def run_job(self, time):
+        yield self.env.timeout(time)
+
+def job(env, job, job_scheduler, job_num):
+    with job_scheduler.processor.request() as request:
+        yield request
+        print("Starting job #{0}".format(job_num))
+        yield env.process(job_scheduler.run_job(job[1]))
+
+def setup_sim(env, num_processors):
+    global jobs
+
+    job_scheduler = Job_scheduler(env, num_processors)
+
+    for i in range(len(jobs)):
+        env.process(job(env, jobs[i], job_scheduler, i))
+
 def create_random_jobs():
     global random_jobs
 
@@ -58,12 +80,16 @@ def main():
     global jobs
     global random_jobs
 
-    '''env = simpy.Environment()
-    car = Car(env)
+    k = 3
+
+    env = simpy.Environment()
+    env.process(setup_sim(env, k))
+    env.run
+    '''car = Car(env)
     env.run(until=15)
     car2 = Car(env)
     env.run(until=30)'''
-    create_random_jobs()
-    print(len(random_jobs))
+    #create_random_jobs()
+    #print(random_jobs[1], random_jobs[2])
 
 main()

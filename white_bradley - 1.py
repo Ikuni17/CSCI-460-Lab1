@@ -10,11 +10,18 @@ September 26, 2017
 
 # $pip install simpy
 import simpy
+import statistics
+import random
+
+jobs = [(4, 9), (15, 2), (18, 16), (20, 3), (26, 29), (29, 198), (35, 7), (45, 170), (57, 180), (83, 178), (88, 73),
+        (95, 8)]
+random_jobs = []
 
 
 class Processor:
     def __init__(self, id):
         self.id = id
+
 
 # Simpy example follows
 class Car(object):
@@ -39,9 +46,24 @@ class Car(object):
     def charge(self, duration):
         yield self.env.timeout(duration)
 
+
+def create_random_jobs():
+    global random_jobs
+
+    for i in range(1000):
+        random_jobs.append((i, random.randint(1, 500)))
+
+
 def main():
-    env = simpy.Environment()
+    global jobs
+    global random_jobs
+
+    '''env = simpy.Environment()
     car = Car(env)
     env.run(until=15)
+    car2 = Car(env)
+    env.run(until=30)'''
+    create_random_jobs()
+    print(len(random_jobs))
 
 main()

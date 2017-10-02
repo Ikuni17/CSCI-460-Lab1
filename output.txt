@@ -1,0 +1,16 @@
+Overall turnaround time for 12 job sequence:
+	 Circular Queue: 420ms
+	 Next Available Processor: 389ms
+
+1000 random jobs, repeated 100 times:
+Circular Queue:
+	Minimum: 79669ms
+	Maximum: 89699ms
+	Average: 84213.63ms
+	Standard Deviation: 2312.63ms
+
+Next Available Processor:
+	Minimum: 45630ms
+	Maximum: 83625ms
+	Average: 60185.23ms
+	Standard Deviation: 9323.91ms

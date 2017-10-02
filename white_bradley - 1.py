@@ -10,6 +10,7 @@ October 2, 2017
 
 import statistics
 import random
+import math
 
 # A job is a tuple of the form (arrival time, processing time)
 # @param jobs: Predefined list of 12 jobs from assignment
@@ -67,6 +68,40 @@ def circular_queue(k, jobs):
     return max(processor_job_end_time) - start_time
 
 
+def next_available(k, jobs):
+    global loading_time
+
+    # Record the starting time and keep track of the starting time of the simulation
+    current_time = jobs[0][0]
+    start_time = jobs[0][0]
+
+    # Keep track of the status of each processor and the time which the current job completes
+    processor_busy = [False] * k
+    processor_job_end_time = [0] * k
+
+    # Iterate through all jobs
+    for job in jobs:
+        # Find the job which completes next or has already completed,
+        # Using infinity guarantees we always find an index
+        min_time = math.inf
+        min_index = None
+        for i in range(len(processor_job_end_time)):
+            if processor_job_end_time[i] < min_time:
+                min_time = processor_job_end_time[i]
+                min_index = i
+
+        # Update the values
+        if current_time < processor_job_end_time[min_index]:
+            current_time = processor_job_end_time[min_index]
+        else:
+            current_time = job[0]
+        processor_job_end_time[min_index] = job[1] + current_time + loading_time
+
+    # The max will be the job which is finishing last,
+    # thus the overall turnaround time is that time minus the start time
+    return max(processor_job_end_time) - start_time
+
+
 def main():
     global jobs
     k = 3
@@ -76,11 +111,35 @@ def main():
 
     # Test each method with the 12 job sequence
     output_file.write("Overall turnaround time for 12 job sequence:\n")
-    output_file.write("\t Circular Queue: {0}ms".format(str(circular_queue(k, jobs))))
+    output_file.write("\t Circular Queue: {0}ms\n".format(str(circular_queue(k, jobs))))
+    output_file.write("\t Next Available Processor: {0}ms\n".format(str(next_available(k, jobs))))
+
+    circular_vector = []
+    available_vector = []
 
     # Test each method with 1000 randomly generated jobs, 100 times and record statistics
+    for i in range(100):
+        jobs = create_random_jobs()
+        circular_vector.append(circular_queue(k, jobs))
+        available_vector.append(next_available(k, jobs))
+
+    output_file.write("\n1000 random jobs, repeated 100 times:\n")
+    output_file.write("Circular Queue:\n")
+    output_file.write("\tMinimum: {0}ms\n".format(min(circular_vector)))
+    output_file.write("\tMaximum: {0}ms\n".format(max(circular_vector)))
+    mean = statistics.mean(circular_vector)
+    output_file.write("\tAverage: {0:.2f}ms\n".format(mean))
+    output_file.write("\tStandard Deviation: {0:.2f}ms\n".format(statistics.stdev(circular_vector, xbar=mean)))
+
+    output_file.write("\nNext Available Processor:\n")
+    output_file.write("\tMinimum: {0}ms\n".format(min(available_vector)))
+    output_file.write("\tMaximum: {0}ms\n".format(max(available_vector)))
+    mean = statistics.mean(available_vector)
+    output_file.write("\tAverage: {0:.2f}ms\n".format(mean))
+    output_file.write("\tStandard Deviation: {0:.2f}ms\n".format(statistics.stdev(available_vector, xbar=mean)))
 
     # Clean up
     output_file.close()
+
 
 main()

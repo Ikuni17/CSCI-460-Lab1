@@ -7,6 +7,8 @@ October 2, 2017
 
 # Interpreter: Python 3.5.1
 # Using k = 1876 % 3 + 2 = 3 processors
+# Inputs: None
+# Outputs to output.txt in the same directory, there is no console output
 
 import statistics
 import random

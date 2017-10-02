@@ -91,10 +91,13 @@ def next_available(k, jobs):
                 min_index = i
 
         # Update the values
+        # If the current time is lower than the minimum job completion time, jump ahead to that point
         if current_time < processor_job_end_time[min_index]:
             current_time = processor_job_end_time[min_index]
+        # Otherwise set the current time to the arrival time of the current job
         else:
             current_time = job[0]
+        # Update the ending time for the new job
         processor_job_end_time[min_index] = job[1] + current_time + loading_time
 
     # The max will be the job which is finishing last,
@@ -123,6 +126,7 @@ def main():
         circular_vector.append(circular_queue(k, jobs))
         available_vector.append(next_available(k, jobs))
 
+    # Generate statistics and write to an output file
     output_file.write("\n1000 random jobs, repeated 100 times:\n")
     output_file.write("Circular Queue:\n")
     output_file.write("\tMinimum: {0}ms\n".format(min(circular_vector)))
